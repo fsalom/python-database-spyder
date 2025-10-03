@@ -1,0 +1,1 @@
+"""Connections repository port."""

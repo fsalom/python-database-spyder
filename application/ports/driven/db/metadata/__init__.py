@@ -1,0 +1,1 @@
+"""Metadata repository port."""
