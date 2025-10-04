@@ -27,7 +27,7 @@ const DeleteUser = ({ id }: { id: string }) => {
   } = useForm()
 
   const deleteUser = async (id: string) => {
-    await UsersService.deleteUser({ userId: id })
+    await UsersService.deleteUserApiV1UsersUserIdDelete({ userId: parseInt(id) })
   }
 
   const mutation = useMutation({
