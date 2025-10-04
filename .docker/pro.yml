@@ -1,0 +1,34 @@
+  version: '3.3'
+
+services:
+  driving:
+    container_name: driving
+    restart: always
+    build:
+      context: ..
+      dockerfile: .docker/app/Dockerfile
+    ports:
+      - '0.0.0.0:8002:8000'
+    image: 'userssource'
+    env_file: 'environments/pro.env'
+    command: 'uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --reload --log-level info'
+    networks:
+      - services-network
+
+  driven:
+    container_name: driven
+    restart: always
+    build:
+      context: ..
+      dockerfile: .docker/app/Dockerfile
+    ports:
+      - '0.0.0.0:8003:8000'
+    image: 'userssource'
+    env_file: 'environments/pro.env'
+    command: 'gunicorn config.wsgi:application -k gevent -w 1 -b :8000 --worker-connections=100 --timeout=4000 --reload --log-level=debug --access-logfile=- --error-logfile=- --log-file=-'
+    networks:
+      - services-network
+
+networks:
+  services-network:
+    external: true

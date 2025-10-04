@@ -11,7 +11,7 @@ from config.database import Base
 
 # Import all models here to ensure they are registered with Base.metadata
 # This is important for autogenerate to detect model changes
-from driven.db.users.models import UserDBO, DepartmentDBO  # noqa: F401
+from driven.db.users.models import UserDBO  # noqa: F401
 from driven.db.connections.models import ConnectionDBO  # noqa: F401
 from driven.db.metadata.models import DiscoveredTableDBO, DiscoveredColumnDBO, DiscoveredRelationDBO  # noqa: F401
 # from driven.db.api_endpoints.models import ApiEndpointDBO  # noqa: F401

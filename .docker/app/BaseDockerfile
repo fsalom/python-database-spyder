@@ -1,0 +1,24 @@
+FROM python:3.12.0-slim-bullseye
+
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get update \
+  # dependencies for building Python packages
+  && apt-get install -y build-essential \
+  # psycopg2 dependencies
+  && apt-get install -y libpq-dev \
+  # Translations dependencies
+  && apt-get install -y gettext \
+  && apt-get install -y procps \
+  && apt-get install nano \
+  # cleaning up unused files
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/*
+
+# gdal dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common \
+  && apt-get update \
+  && apt-get install -y gdal-bin \
+  && apt-get install nano
+
+RUN pip install poetry
