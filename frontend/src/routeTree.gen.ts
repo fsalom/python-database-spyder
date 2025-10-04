@@ -17,7 +17,10 @@ import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
+import { Route as LayoutConnectionsRouteImport } from './routes/_layout/connections'
 import { Route as LayoutAdminRouteImport } from './routes/_layout/admin'
+import { Route as LayoutTableTableIdRouteImport } from './routes/_layout/table.$tableId'
+import { Route as LayoutExplorerConnectionIdRouteImport } from './routes/_layout/explorer.$connectionId'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -58,11 +61,27 @@ const LayoutItemsRoute = LayoutItemsRouteImport.update({
   path: '/items',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutConnectionsRoute = LayoutConnectionsRouteImport.update({
+  id: '/connections',
+  path: '/connections',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutAdminRoute = LayoutAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutTableTableIdRoute = LayoutTableTableIdRouteImport.update({
+  id: '/table/$tableId',
+  path: '/table/$tableId',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutExplorerConnectionIdRoute =
+  LayoutExplorerConnectionIdRouteImport.update({
+    id: '/explorer/$connectionId',
+    path: '/explorer/$connectionId',
+    getParentRoute: () => LayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
@@ -70,9 +89,12 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/admin': typeof LayoutAdminRoute
+  '/connections': typeof LayoutConnectionsRoute
   '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
+  '/explorer/$connectionId': typeof LayoutExplorerConnectionIdRoute
+  '/table/$tableId': typeof LayoutTableTableIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -80,9 +102,12 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/admin': typeof LayoutAdminRoute
+  '/connections': typeof LayoutConnectionsRoute
   '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
+  '/explorer/$connectionId': typeof LayoutExplorerConnectionIdRoute
+  '/table/$tableId': typeof LayoutTableTableIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -92,9 +117,12 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_layout/admin': typeof LayoutAdminRoute
+  '/_layout/connections': typeof LayoutConnectionsRoute
   '/_layout/items': typeof LayoutItemsRoute
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/': typeof LayoutIndexRoute
+  '/_layout/explorer/$connectionId': typeof LayoutExplorerConnectionIdRoute
+  '/_layout/table/$tableId': typeof LayoutTableTableIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -104,9 +132,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/admin'
+    | '/connections'
     | '/items'
     | '/settings'
     | '/'
+    | '/explorer/$connectionId'
+    | '/table/$tableId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -114,9 +145,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/admin'
+    | '/connections'
     | '/items'
     | '/settings'
     | '/'
+    | '/explorer/$connectionId'
+    | '/table/$tableId'
   id:
     | '__root__'
     | '/_layout'
@@ -125,9 +159,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/_layout/admin'
+    | '/_layout/connections'
     | '/_layout/items'
     | '/_layout/settings'
     | '/_layout/'
+    | '/_layout/explorer/$connectionId'
+    | '/_layout/table/$tableId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -196,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutItemsRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/connections': {
+      id: '/_layout/connections'
+      path: '/connections'
+      fullPath: '/connections'
+      preLoaderRoute: typeof LayoutConnectionsRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/admin': {
       id: '/_layout/admin'
       path: '/admin'
@@ -203,21 +247,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAdminRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/table/$tableId': {
+      id: '/_layout/table/$tableId'
+      path: '/table/$tableId'
+      fullPath: '/table/$tableId'
+      preLoaderRoute: typeof LayoutTableTableIdRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/explorer/$connectionId': {
+      id: '/_layout/explorer/$connectionId'
+      path: '/explorer/$connectionId'
+      fullPath: '/explorer/$connectionId'
+      preLoaderRoute: typeof LayoutExplorerConnectionIdRouteImport
+      parentRoute: typeof LayoutRoute
+    }
   }
 }
 
 interface LayoutRouteChildren {
   LayoutAdminRoute: typeof LayoutAdminRoute
+  LayoutConnectionsRoute: typeof LayoutConnectionsRoute
   LayoutItemsRoute: typeof LayoutItemsRoute
   LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
+  LayoutExplorerConnectionIdRoute: typeof LayoutExplorerConnectionIdRoute
+  LayoutTableTableIdRoute: typeof LayoutTableTableIdRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutAdminRoute: LayoutAdminRoute,
+  LayoutConnectionsRoute: LayoutConnectionsRoute,
   LayoutItemsRoute: LayoutItemsRoute,
   LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
+  LayoutExplorerConnectionIdRoute: LayoutExplorerConnectionIdRoute,
+  LayoutTableTableIdRoute: LayoutTableTableIdRoute,
 }
 
 const LayoutRouteWithChildren =
