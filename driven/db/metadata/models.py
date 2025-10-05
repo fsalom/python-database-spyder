@@ -48,6 +48,8 @@ class DiscoveredColumnDBO(Base):
     is_nullable: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_primary_key: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_foreign_key: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    foreign_key_table: Mapped[str] = mapped_column(String(255), nullable=True)
+    foreign_key_column: Mapped[str] = mapped_column(String(255), nullable=True)
     default_value: Mapped[str] = mapped_column(Text, nullable=True)
     max_length: Mapped[int] = mapped_column(Integer, nullable=True)
     precision: Mapped[int] = mapped_column(Integer, nullable=True)
