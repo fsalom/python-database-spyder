@@ -20,9 +20,33 @@ function TableNode({ data }: TableNodeProps) {
       borderColor="blue.500"
       borderRadius="md"
       minW="280px"
-      boxShadow="md"
+      boxShadow="lg"
+      _hover={{ boxShadow: 'xl' }}
+      transition="box-shadow 0.2s"
     >
-      <Handle type="target" position={Position.Left} />
+      {/* Handles for connections */}
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="left"
+        style={{
+          background: '#805AD5',
+          width: 12,
+          height: 12,
+          border: '2px solid white'
+        }}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="right"
+        style={{
+          background: '#805AD5',
+          width: 12,
+          height: 12,
+          border: '2px solid white'
+        }}
+      />
 
       {/* Table Header */}
       <Box bg="blue.500" color="white" px={3} py={2} borderTopRadius="md">
@@ -49,13 +73,13 @@ function TableNode({ data }: TableNodeProps) {
             _hover={{ bg: 'gray.50' }}
           >
             <Flex align="center" gap={1.5} flex={1}>
-              {table.primary_key_columns?.includes(column.column_name) && (
+              {column.is_primary_key && (
                 <FiKey color="gold" size={12} />
               )}
               {column.is_foreign_key && (
                 <FiLink color="purple" size={12} />
               )}
-              <Text fontWeight={table.primary_key_columns?.includes(column.column_name) ? 'bold' : 'normal'}>
+              <Text fontWeight={column.is_primary_key ? 'bold' : 'normal'}>
                 {column.column_name}
               </Text>
             </Flex>
@@ -70,8 +94,6 @@ function TableNode({ data }: TableNodeProps) {
           </Text>
         )}
       </VStack>
-
-      <Handle type="source" position={Position.Right} />
     </Box>
   )
 }
