@@ -103,6 +103,8 @@ export type DiscoveredColumnResponse = {
     is_nullable: boolean;
     is_primary_key: boolean;
     is_foreign_key: boolean;
+    foreign_key_table?: (string | null);
+    foreign_key_column?: (string | null);
     default_value?: (string | null);
     max_length?: (number | null);
     precision?: (number | null);

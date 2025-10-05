@@ -447,6 +447,28 @@ export const DiscoveredColumnResponseSchema = {
             type: 'boolean',
             title: 'Is Foreign Key'
         },
+        foreign_key_table: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Foreign Key Table'
+        },
+        foreign_key_column: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Foreign Key Column'
+        },
         default_value: {
             anyOf: [
                 {

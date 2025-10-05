@@ -1,10 +1,11 @@
-import { Badge, Container, Flex, Heading, Table, Text, Card, Box } from "@chakra-ui/react"
+import { Badge, Container, Flex, Heading, Table, Text, Card, Box, Tabs } from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { FiDatabase, FiTable } from "react-icons/fi"
+import { FiDatabase, FiTable, FiGrid } from "react-icons/fi"
 
 import { ConnectionsService, IntrospectionService } from "@/client"
 import { Skeleton } from "@/components/ui/skeleton"
+import ERDiagram from "@/components/DatabaseVisualization/ERDiagram"
 
 export const Route = createFileRoute("/_layout/explorer/$connectionId")({
   component: Explorer,
@@ -60,10 +61,6 @@ function Explorer() {
         {connection.host}:{connection.port} / {connection.database}
       </Text>
 
-      <Heading size="md" mb={4}>
-        Tables
-      </Heading>
-
       {tablesLoading ? (
         <Box>
           {[1, 2, 3].map((i) => (
@@ -79,45 +76,62 @@ function Explorer() {
           </Card.Body>
         </Card.Root>
       ) : (
-        <Table.Root>
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader>Table Name</Table.ColumnHeader>
-              <Table.ColumnHeader>Schema</Table.ColumnHeader>
-              <Table.ColumnHeader>Columns</Table.ColumnHeader>
-              <Table.ColumnHeader>Primary Key</Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {tables.map((table) => (
-              <Table.Row
-                key={table.id}
-                _hover={{ bg: "gray.50", cursor: "pointer" }}
-                asChild
-              >
-                <Link to={`/table/${table.id}`}>
-                  <Table.Cell>
-                    <Flex align="center" gap={2}>
-                      <FiTable />
-                      <Text fontWeight="medium">{table.table_name}</Text>
-                    </Flex>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Badge size="sm">{table.schema_name}</Badge>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Badge colorScheme="purple">{table.columns?.length || 0} columns</Badge>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Text fontSize="sm" color="gray.600">
-                      {table.primary_key_columns?.join(", ") || "None"}
-                    </Text>
-                  </Table.Cell>
-                </Link>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
+        <Tabs.Root defaultValue="diagram">
+          <Tabs.List mb={4}>
+            <Tabs.Trigger value="diagram">
+              <FiGrid /> ER Diagram
+            </Tabs.Trigger>
+            <Tabs.Trigger value="list">
+              <FiTable /> Tables List
+            </Tabs.Trigger>
+          </Tabs.List>
+
+          <Tabs.Content value="diagram">
+            <ERDiagram tables={tables} />
+          </Tabs.Content>
+
+          <Tabs.Content value="list">
+            <Table.Root>
+              <Table.Header>
+                <Table.Row>
+                  <Table.ColumnHeader>Table Name</Table.ColumnHeader>
+                  <Table.ColumnHeader>Schema</Table.ColumnHeader>
+                  <Table.ColumnHeader>Columns</Table.ColumnHeader>
+                  <Table.ColumnHeader>Primary Key</Table.ColumnHeader>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {tables.map((table) => (
+                  <Table.Row
+                    key={table.id}
+                    _hover={{ bg: "gray.50", cursor: "pointer" }}
+                    asChild
+                  >
+                    <Link to={`/table/${table.id}`}>
+                      <Table.Cell>
+                        <Flex align="center" gap={2}>
+                          <FiTable />
+                          <Text fontWeight="medium">{table.table_name}</Text>
+                        </Flex>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Badge size="sm">{table.schema_name}</Badge>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Badge colorScheme="purple">{table.columns?.length || 0} columns</Badge>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Text fontSize="sm" color="gray.600">
+                          {table.primary_key_columns?.join(", ") || "None"}
+                        </Text>
+                      </Table.Cell>
+                    </Link>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Root>
+          </Tabs.Content>
+        </Tabs.Root>
       )}
     </Container>
   )
