@@ -15,6 +15,8 @@ class DiscoveredColumn(BaseModel):
     is_nullable: bool = True
     is_primary_key: bool = False
     is_foreign_key: bool = False
+    foreign_key_table: Optional[str] = None
+    foreign_key_column: Optional[str] = None
     default_value: Optional[str] = None
     max_length: Optional[int] = None
     precision: Optional[int] = None
