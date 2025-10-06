@@ -79,12 +79,7 @@ class ConnectionsService:
         self, connection_id: int, status: ConnectionStatus
     ) -> Connection:
         """Update the status of a connection."""
-        connection = await self.connections_repo.get_by_id(connection_id)
-        if not connection:
-            raise ValueError(f"Connection with id {connection_id} not found")
-
-        connection.status = status
-        return await self.connections_repo.update(connection)
+        return await self.connections_repo.update_status(connection_id, status)
 
     async def update_last_introspection(self, connection_id: int) -> Connection:
         """Update the last introspection timestamp."""

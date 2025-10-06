@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from application.ports.driven.db.connections.repository_port import ConnectionsRepositoryPort
-from domain.entities.connection import Connection
+from domain.entities.connection import Connection, ConnectionStatus
 from driven.db.connections.mapper import ConnectionDBOMapper
 from driven.db.connections.models import ConnectionDBO
 
@@ -95,3 +95,18 @@ class ConnectionsDBRepositoryAdapter(ConnectionsRepositoryPort):
         await self.session.delete(dbo)
         await self.session.flush()
         return True
+
+    async def update_status(self, connection_id: int, status: ConnectionStatus) -> Connection:
+        """Update connection status."""
+        stmt = select(ConnectionDBO).where(ConnectionDBO.id == connection_id)
+        result = await self.session.execute(stmt)
+        dbo = result.scalar_one_or_none()
+
+        if dbo is None:
+            raise ValueError(f"Connection with id {connection_id} not found")
+
+        dbo.status = status.value if hasattr(status, 'value') else status
+        await self.session.flush()
+        await self.session.refresh(dbo)
+
+        return await self.mapper.dbo_to_entity(dbo)

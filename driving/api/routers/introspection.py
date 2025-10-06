@@ -15,6 +15,7 @@ from driving.api.schemas.introspection_schemas import (
     IntrospectionRequest,
     IntrospectionResponse,
 )
+from domain.entities.connection import ConnectionStatus
 
 router = APIRouter(prefix="/introspection", tags=["introspection"])
 
@@ -58,8 +59,9 @@ async def introspect_database(
         # Perform introspection
         tables, relations = await introspection_service.introspect_database(connection)
 
-        # Update last introspection timestamp
+        # Update last introspection timestamp and status to active
         await connections_service.update_last_introspection(request.connection_id)
+        await connections_service.update_connection_status(request.connection_id, ConnectionStatus.ACTIVE)
 
         return IntrospectionResponse(
             success=True,
@@ -68,10 +70,14 @@ async def introspect_database(
             relations_count=len(relations),
         )
     except ConnectionError as e:
+        # Update status to error on connection failure
+        await connections_service.update_connection_status(request.connection_id, ConnectionStatus.ERROR)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)
         )
     except Exception as e:
+        # Update status to error on any failure
+        await connections_service.update_connection_status(request.connection_id, ConnectionStatus.ERROR)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Introspection failed: {str(e)}",
@@ -133,8 +139,9 @@ async def refresh_metadata(
         # Refresh metadata
         tables, relations = await introspection_service.refresh_metadata(connection)
 
-        # Update last introspection timestamp
+        # Update last introspection timestamp and status to active
         await connections_service.update_last_introspection(connection_id)
+        await connections_service.update_connection_status(connection_id, ConnectionStatus.ACTIVE)
 
         return IntrospectionResponse(
             success=True,
@@ -143,10 +150,14 @@ async def refresh_metadata(
             relations_count=len(relations),
         )
     except ConnectionError as e:
+        # Update status to error on connection failure
+        await connections_service.update_connection_status(connection_id, ConnectionStatus.ERROR)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)
         )
     except Exception as e:
+        # Update status to error on any failure
+        await connections_service.update_connection_status(connection_id, ConnectionStatus.ERROR)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Refresh failed: {str(e)}",

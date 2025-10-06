@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from domain.entities.connection import Connection, ConnectionUpdate
+from domain.entities.connection import Connection, ConnectionUpdate, ConnectionStatus
 
 
 class ConnectionsRepositoryPort(ABC):
@@ -36,4 +36,9 @@ class ConnectionsRepositoryPort(ABC):
     @abstractmethod
     async def delete(self, connection_id: int) -> bool:
         """Delete a connection."""
+        raise NotImplementedError
+
+    @abstractmethod
+    async def update_status(self, connection_id: int, status: ConnectionStatus) -> Connection:
+        """Update connection status."""
         raise NotImplementedError

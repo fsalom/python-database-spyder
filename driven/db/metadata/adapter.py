@@ -52,8 +52,15 @@ class MetadataDBRepositoryAdapter(MetadataRepositoryPort):
             await self.session.flush()  # Get ID
             await self.session.refresh(table_dbo)
 
-            # Create columns
+            # Create columns (deduplicate by column_name to prevent duplicates)
+            seen_columns = set()
             for column in table.columns:
+                # Skip duplicate column names within the same table
+                if column.column_name in seen_columns:
+                    print(f"Warning: Skipping duplicate column '{column.column_name}' in table '{table.table_name}'")
+                    continue
+                seen_columns.add(column.column_name)
+
                 column_dbo = DiscoveredColumnDBO(
                     table_id=table_dbo.id,
                     column_name=column.column_name,
