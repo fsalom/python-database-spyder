@@ -91,7 +91,7 @@ function Explorer() {
           </Tabs.Content>
 
           <Tabs.Content value="list">
-            <Table.Root>
+            <Table.Root variant="outline">
               <Table.Header>
                 <Table.Row>
                   <Table.ColumnHeader>Table Name</Table.ColumnHeader>
@@ -105,27 +105,25 @@ function Explorer() {
                   <Table.Row
                     key={table.id}
                     _hover={{ bg: "gray.50", cursor: "pointer" }}
-                    asChild
+                    onClick={() => window.location.href = `/table/${table.id}`}
                   >
-                    <Link to={`/table/${table.id}`}>
-                      <Table.Cell>
-                        <Flex align="center" gap={2}>
-                          <FiTable />
-                          <Text fontWeight="medium">{table.table_name}</Text>
-                        </Flex>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Badge size="sm">{table.schema_name}</Badge>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Badge colorScheme="purple">{table.columns?.length || 0} columns</Badge>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text fontSize="sm" color="gray.600">
-                          {table.primary_key_columns?.join(", ") || "None"}
-                        </Text>
-                      </Table.Cell>
-                    </Link>
+                    <Table.Cell>
+                      <Flex align="center" gap={2}>
+                        <FiTable />
+                        <Text fontWeight="medium">{table.table_name}</Text>
+                      </Flex>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Badge size="sm">{table.schema_name}</Badge>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Badge colorScheme="purple">{table.columns?.length || 0} columns</Badge>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Text fontSize="sm" color="gray.600">
+                        {table.primary_key_columns?.join(", ") || "None"}
+                      </Text>
+                    </Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>

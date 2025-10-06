@@ -76,10 +76,25 @@ class PostgreSQLInspector(BaseInspector):
         fk_constraints = inspector.get_foreign_keys(table_name, schema=schema)
         fk_columns = [fk["constrained_columns"][0] for fk in fk_constraints if fk.get("constrained_columns")]
 
+        # Create a mapping of column -> (referred_table, referred_column)
+        fk_mapping = {}
+        for fk in fk_constraints:
+            if fk.get("constrained_columns") and fk.get("referred_table") and fk.get("referred_columns"):
+                col_name = fk["constrained_columns"][0]
+                fk_mapping[col_name] = {
+                    "table": fk["referred_table"],
+                    "column": fk["referred_columns"][0] if fk["referred_columns"] else None
+                }
+
         columns = []
         for idx, col_info in enumerate(columns_info):
             col_name = col_info["name"]
             col_type = col_info["type"]
+
+            fk_info = fk_mapping.get(col_name)
+
+            fk_table = fk_info.get("table") if fk_info else None
+            fk_column = fk_info.get("column") if fk_info else None
 
             column = DiscoveredColumn(
                 table_id=0,  # Will be set when saving
@@ -88,6 +103,8 @@ class PostgreSQLInspector(BaseInspector):
                 is_nullable=col_info.get("nullable", True),
                 is_primary_key=col_name in pk_columns,
                 is_foreign_key=col_name in fk_columns,
+                foreign_key_table=fk_table,
+                foreign_key_column=fk_column,
                 default_value=str(col_info.get("default")) if col_info.get("default") else None,
                 max_length=getattr(col_type, "length", None),
                 precision=getattr(col_type, "precision", None),

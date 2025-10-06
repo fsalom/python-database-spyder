@@ -39,8 +39,19 @@ class DiscoveredTableResponse(BaseModel):
     comment: Optional[str] = None
     created_at: datetime
     columns: List[DiscoveredColumnResponse] = []
+    primary_key_columns: Optional[List[str]] = None
 
     model_config = {"from_attributes": True}
+
+    @property
+    def _primary_key_columns(self) -> List[str]:
+        """Compute primary key columns from the columns list."""
+        return [col.column_name for col in self.columns if col.is_primary_key]
+
+    def model_post_init(self, __context):
+        """Set primary_key_columns after initialization."""
+        if self.primary_key_columns is None:
+            self.primary_key_columns = self._primary_key_columns
 
 
 class DiscoveredRelationResponse(BaseModel):
