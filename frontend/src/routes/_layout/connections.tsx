@@ -1,6 +1,6 @@
 import { Badge, Container, Flex, Heading, Table, Text } from "@chakra-ui/react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 
 import { ConnectionsService } from "@/client"
 import AddConnection from "@/components/Connections/AddConnection"
@@ -58,14 +58,32 @@ function ConnectionsTable() {
       <Table.Body>
         {connections.map((connection) => (
           <Table.Row key={connection.id}>
-            <Table.Cell fontWeight="medium">{connection.name}</Table.Cell>
+            <Table.Cell fontWeight="medium">
+              <Link
+                to="/explorer/$connectionId"
+                params={{ connectionId: connection.id.toString() }}
+                style={{ color: '#3182CE', textDecoration: 'none' }}
+                onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+              >
+                {connection.name}
+              </Link>
+            </Table.Cell>
             <Table.Cell>
-              <Badge colorScheme="blue">{connection.db_type}</Badge>
+              <Badge colorScheme="blue">{connection.database_type}</Badge>
             </Table.Cell>
             <Table.Cell>{connection.host}:{connection.port}</Table.Cell>
             <Table.Cell>
-              <Badge colorScheme={connection.is_active ? "green" : "gray"}>
-                {connection.is_active ? "Active" : "Inactive"}
+              <Badge
+                colorScheme={
+                  connection.status === "active" ? "green" :
+                  connection.status === "error" ? "red" :
+                  "gray"
+                }
+              >
+                {connection.status === "active" ? "Active" :
+                 connection.status === "error" ? "Error" :
+                 "Inactive"}
               </Badge>
             </Table.Cell>
             <Table.Cell>

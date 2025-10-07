@@ -1,11 +1,13 @@
-import { Badge, Container, Flex, Heading, Table, Text, Card, Box, Tabs } from "@chakra-ui/react"
-import { useQuery } from "@tanstack/react-query"
+import { Badge, Container, Flex, Heading, Table, Text, Card, Box, Tabs, Button, VStack } from "@chakra-ui/react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { FiDatabase, FiTable, FiGrid } from "react-icons/fi"
+import { FiDatabase, FiTable, FiGrid, FiRefreshCw } from "react-icons/fi"
+import { useState } from "react"
 
 import { ConnectionsService, IntrospectionService } from "@/client"
 import { Skeleton } from "@/components/ui/skeleton"
 import ERDiagram from "@/components/DatabaseVisualization/ERDiagram"
+import { toaster } from "@/components/ui/toaster"
 
 export const Route = createFileRoute("/_layout/explorer/$connectionId")({
   component: Explorer,
@@ -13,6 +15,8 @@ export const Route = createFileRoute("/_layout/explorer/$connectionId")({
 
 function Explorer() {
   const { connectionId } = Route.useParams()
+  const queryClient = useQueryClient()
+  const [isIntrospecting, setIsIntrospecting] = useState(false)
 
   const { data: connection, isLoading: connectionLoading } = useQuery({
     queryKey: ["connection", connectionId],
@@ -29,6 +33,39 @@ function Explorer() {
         connectionId: parseInt(connectionId),
       }),
   })
+
+  const introspectMutation = useMutation({
+    mutationFn: () =>
+      IntrospectionService.introspectDatabaseApiV1IntrospectionPost({
+        requestBody: { connection_id: parseInt(connectionId) },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tables", connectionId] })
+      queryClient.invalidateQueries({ queryKey: ["connection", connectionId] })
+      queryClient.invalidateQueries({ queryKey: ["connections"] })
+      toaster.create({
+        title: "Introspection successful",
+        description: "Database tables have been discovered",
+        type: "success",
+      })
+      setIsIntrospecting(false)
+    },
+    onError: (error: any) => {
+      queryClient.invalidateQueries({ queryKey: ["connection", connectionId] })
+      queryClient.invalidateQueries({ queryKey: ["connections"] })
+      toaster.create({
+        title: "Introspection failed",
+        description: error.body?.detail || "Failed to introspect database",
+        type: "error",
+      })
+      setIsIntrospecting(false)
+    },
+  })
+
+  const handleIntrospect = () => {
+    setIsIntrospecting(true)
+    introspectMutation.mutate()
+  }
 
   if (connectionLoading) {
     return (
@@ -70,9 +107,23 @@ function Explorer() {
       ) : !tables || tables.length === 0 ? (
         <Card.Root>
           <Card.Body>
-            <Text color="gray.500" textAlign="center">
-              No tables found. Click "Introspect Database" to discover tables.
-            </Text>
+            <VStack gap={4} py={8}>
+              <FiDatabase size={48} color="gray" />
+              <Text color="gray.500" textAlign="center" fontSize="lg">
+                No tables found for this connection
+              </Text>
+              <Text color="gray.400" textAlign="center" fontSize="sm">
+                Run introspection to discover the database structure
+              </Text>
+              <Button
+                colorScheme="blue"
+                onClick={handleIntrospect}
+                loading={isIntrospecting}
+                loadingText="Introspecting..."
+              >
+                <FiRefreshCw /> Introspect Database
+              </Button>
+            </VStack>
           </Card.Body>
         </Card.Root>
       ) : (
