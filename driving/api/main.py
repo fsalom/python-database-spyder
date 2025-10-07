@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from driving.api.routers import connections, introspection, auth, users
+from driving.api.routers import connections, introspection, auth, users, query_execution, dashboard
 
 app = FastAPI(
     title="DB Spyder API",
@@ -25,6 +25,8 @@ app.include_router(auth.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(connections.router, prefix="/api/v1")
 app.include_router(introspection.router, prefix="/api/v1")
+app.include_router(query_execution.router, prefix="/api/v1")
+app.include_router(dashboard.router, prefix="/api/v1")
 
 
 @app.get("/")
