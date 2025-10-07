@@ -3,6 +3,8 @@ import { Handle, Position } from 'reactflow'
 import { Box, Text, VStack, Badge, Flex } from '@chakra-ui/react'
 import { FiKey, FiLink } from 'react-icons/fi'
 import type { DiscoveredTableResponse } from '@/client'
+import { useFieldSelection } from '@/contexts/FieldSelectionContext'
+import { Checkbox } from '@/components/ui/checkbox'
 
 interface TableNodeProps {
   data: {
@@ -12,6 +14,7 @@ interface TableNodeProps {
 
 function TableNode({ data }: TableNodeProps) {
   const { table } = data
+  const { addField, removeField, isFieldSelected } = useFieldSelection()
 
   return (
     <Box
@@ -60,34 +63,63 @@ function TableNode({ data }: TableNodeProps) {
 
       {/* Columns */}
       <VStack align="stretch" gap={0} maxH="300px" overflowY="auto">
-        {table.columns?.slice(0, 10).map((column) => (
-          <Flex
-            key={column.column_name}
-            px={3}
-            py={1.5}
-            borderBottom="1px solid"
-            borderColor="gray.100"
-            align="center"
-            justify="space-between"
-            fontSize="xs"
-            _hover={{ bg: 'gray.50' }}
-          >
-            <Flex align="center" gap={1.5} flex={1}>
-              {column.is_primary_key && (
-                <FiKey color="gold" size={12} />
-              )}
-              {column.is_foreign_key && (
-                <FiLink color="purple" size={12} />
-              )}
-              <Text fontWeight={column.is_primary_key ? 'bold' : 'normal'}>
-                {column.column_name}
-              </Text>
+        {table.columns?.slice(0, 10).map((column) => {
+          const checked = isFieldSelected(table.id, column.column_name)
+
+          const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            e.stopPropagation()
+            if (e.target.checked) {
+              addField({
+                tableId: table.id,
+                tableName: table.table_name,
+                columnName: column.column_name,
+                dataType: column.data_type,
+                isPrimaryKey: column.is_primary_key,
+                isForeignKey: column.is_foreign_key,
+                foreignKeyTable: column.foreign_key_table,
+                foreignKeyColumn: column.foreign_key_column,
+              })
+            } else {
+              removeField(table.id, column.column_name)
+            }
+          }
+
+          return (
+            <Flex
+              key={column.column_name}
+              px={3}
+              py={1.5}
+              borderBottom="1px solid"
+              borderColor="gray.100"
+              align="center"
+              justify="space-between"
+              fontSize="xs"
+              _hover={{ bg: 'gray.50' }}
+              bg={checked ? 'blue.50' : 'transparent'}
+            >
+              <Flex align="center" gap={1.5} flex={1}>
+                <Checkbox
+                  size="sm"
+                  checked={checked}
+                  onChange={handleCheckboxChange}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                {column.is_primary_key && (
+                  <FiKey color="gold" size={12} />
+                )}
+                {column.is_foreign_key && (
+                  <FiLink color="purple" size={12} />
+                )}
+                <Text fontWeight={column.is_primary_key ? 'bold' : 'normal'}>
+                  {column.column_name}
+                </Text>
+              </Flex>
+              <Badge size="xs" colorScheme="gray" fontSize="9px">
+                {column.data_type}
+              </Badge>
             </Flex>
-            <Badge size="xs" colorScheme="gray" fontSize="9px">
-              {column.data_type}
-            </Badge>
-          </Flex>
-        ))}
+          )
+        })}
         {table.columns && table.columns.length > 10 && (
           <Text fontSize="xs" color="gray.500" px={3} py={1} textAlign="center">
             +{table.columns.length - 10} more columns

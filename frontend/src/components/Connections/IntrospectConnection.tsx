@@ -20,11 +20,15 @@ const IntrospectConnection = ({ connection }: IntrospectConnectionProps) => {
         requestBody: { connection_id: connection.id }
       }),
     onSuccess: (data) => {
-      showSuccessToast(`Discovered ${data.tables_count} tables with ${data.columns_count} columns`)
+      showSuccessToast(`Discovered ${data.tables_count} tables with ${data.relations_count} relations`)
       queryClient.invalidateQueries({ queryKey: ["tables", connection.id] })
+      queryClient.invalidateQueries({ queryKey: ["connection", connection.id] })
+      queryClient.invalidateQueries({ queryKey: ["connections"] })
     },
     onError: () => {
       showErrorToast("Failed to introspect database")
+      queryClient.invalidateQueries({ queryKey: ["connection", connection.id] })
+      queryClient.invalidateQueries({ queryKey: ["connections"] })
     },
   })
 
