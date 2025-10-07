@@ -410,6 +410,58 @@ export const ConnectionUpdateSchema = {
     description: 'Schema for updating a connection.'
 } as const;
 
+export const DashboardResponseSchema = {
+    properties: {
+        stats: {
+            '$ref': '#/components/schemas/DashboardStats'
+        },
+        recent_connections: {
+            items: {
+                '$ref': '#/components/schemas/ConnectionResponse'
+            },
+            type: 'array',
+            title: 'Recent Connections'
+        }
+    },
+    type: 'object',
+    required: ['stats', 'recent_connections'],
+    title: 'DashboardResponse',
+    description: 'Dashboard data response.'
+} as const;
+
+export const DashboardStatsSchema = {
+    properties: {
+        total_connections: {
+            type: 'integer',
+            title: 'Total Connections'
+        },
+        active_connections: {
+            type: 'integer',
+            title: 'Active Connections'
+        },
+        inactive_connections: {
+            type: 'integer',
+            title: 'Inactive Connections'
+        },
+        error_connections: {
+            type: 'integer',
+            title: 'Error Connections'
+        },
+        total_tables: {
+            type: 'integer',
+            title: 'Total Tables'
+        },
+        total_relations: {
+            type: 'integer',
+            title: 'Total Relations'
+        }
+    },
+    type: 'object',
+    required: ['total_connections', 'active_connections', 'inactive_connections', 'error_connections', 'total_tables', 'total_relations'],
+    title: 'DashboardStats',
+    description: 'Dashboard statistics response.'
+} as const;
+
 export const DatabaseTypeSchema = {
     type: 'string',
     enum: ['postgresql', 'mysql', 'sqlite', 'mssql', 'oracle'],
@@ -656,12 +708,90 @@ export const DiscoveredTableResponseSchema = {
             type: 'array',
             title: 'Columns',
             default: []
+        },
+        primary_key_columns: {
+            anyOf: [
+                {
+                    items: {
+                        type: 'string'
+                    },
+                    type: 'array'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Primary Key Columns'
         }
     },
     type: 'object',
     required: ['id', 'connection_id', 'table_name', 'created_at'],
     title: 'DiscoveredTableResponse',
     description: 'Schema for discovered table response.'
+} as const;
+
+export const ExecuteQueryRequestSchema = {
+    properties: {
+        connection_id: {
+            type: 'integer',
+            title: 'Connection Id',
+            description: 'ID of the database connection'
+        },
+        query: {
+            type: 'string',
+            minLength: 1,
+            title: 'Query',
+            description: 'SQL query to execute'
+        },
+        limit: {
+            type: 'integer',
+            maximum: 1000,
+            minimum: 1,
+            title: 'Limit',
+            description: 'Maximum number of rows to return',
+            default: 100
+        }
+    },
+    type: 'object',
+    required: ['connection_id', 'query'],
+    title: 'ExecuteQueryRequest',
+    description: 'Request schema for executing SQL queries.'
+} as const;
+
+export const ExecuteQueryResponseSchema = {
+    properties: {
+        success: {
+            type: 'boolean',
+            title: 'Success'
+        },
+        columns: {
+            items: {
+                type: 'string'
+            },
+            type: 'array',
+            title: 'Columns'
+        },
+        rows: {
+            items: {
+                additionalProperties: true,
+                type: 'object'
+            },
+            type: 'array',
+            title: 'Rows'
+        },
+        row_count: {
+            type: 'integer',
+            title: 'Row Count'
+        },
+        execution_time_ms: {
+            type: 'number',
+            title: 'Execution Time Ms'
+        }
+    },
+    type: 'object',
+    required: ['success', 'columns', 'rows', 'row_count', 'execution_time_ms'],
+    title: 'ExecuteQueryResponse',
+    description: 'Response schema for query execution results.'
 } as const;
 
 export const HTTPValidationErrorSchema = {

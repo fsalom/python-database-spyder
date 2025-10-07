@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, RegisterApiV1AuthRegisterPostData, RegisterApiV1AuthRegisterPostResponse, GetCurrentUserInfoApiV1AuthMeGetResponse, GetAllConnectionsApiV1ConnectionsGetResponse, CreateConnectionApiV1ConnectionsPostData, CreateConnectionApiV1ConnectionsPostResponse, GetConnectionApiV1ConnectionsConnectionIdGetData, GetConnectionApiV1ConnectionsConnectionIdGetResponse, UpdateConnectionApiV1ConnectionsConnectionIdPutData, UpdateConnectionApiV1ConnectionsConnectionIdPutResponse, DeleteConnectionApiV1ConnectionsConnectionIdDeleteData, DeleteConnectionApiV1ConnectionsConnectionIdDeleteResponse, TestConnectionApiV1ConnectionsTestPostData, TestConnectionApiV1ConnectionsTestPostResponse, RootGetResponse, HealthHealthGetResponse, IntrospectDatabaseApiV1IntrospectionPostData, IntrospectDatabaseApiV1IntrospectionPostResponse, GetTablesByConnectionApiV1IntrospectionConnectionsConnectionIdTablesGetData, GetTablesByConnectionApiV1IntrospectionConnectionsConnectionIdTablesGetResponse, GetTableApiV1IntrospectionTablesTableIdGetData, GetTableApiV1IntrospectionTablesTableIdGetResponse, GetRelationsByConnectionApiV1IntrospectionConnectionsConnectionIdRelationsGetData, GetRelationsByConnectionApiV1IntrospectionConnectionsConnectionIdRelationsGetResponse, RefreshMetadataApiV1IntrospectionConnectionsConnectionIdRefreshPostData, RefreshMetadataApiV1IntrospectionConnectionsConnectionIdRefreshPostResponse, DeleteMetadataApiV1IntrospectionConnectionsConnectionIdMetadataDeleteData, DeleteMetadataApiV1IntrospectionConnectionsConnectionIdMetadataDeleteResponse, GetUsersApiV1UsersGetData, GetUsersApiV1UsersGetResponse, CreateUserApiV1UsersPostData, CreateUserApiV1UsersPostResponse, GetUserApiV1UsersUserIdGetData, GetUserApiV1UsersUserIdGetResponse, UpdateUserApiV1UsersUserIdPutData, UpdateUserApiV1UsersUserIdPutResponse, DeleteUserApiV1UsersUserIdDeleteData, DeleteUserApiV1UsersUserIdDeleteResponse } from './types.gen';
+import type { LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, RegisterApiV1AuthRegisterPostData, RegisterApiV1AuthRegisterPostResponse, GetCurrentUserInfoApiV1AuthMeGetResponse, GetAllConnectionsApiV1ConnectionsGetResponse, CreateConnectionApiV1ConnectionsPostData, CreateConnectionApiV1ConnectionsPostResponse, GetConnectionApiV1ConnectionsConnectionIdGetData, GetConnectionApiV1ConnectionsConnectionIdGetResponse, UpdateConnectionApiV1ConnectionsConnectionIdPutData, UpdateConnectionApiV1ConnectionsConnectionIdPutResponse, DeleteConnectionApiV1ConnectionsConnectionIdDeleteData, DeleteConnectionApiV1ConnectionsConnectionIdDeleteResponse, TestConnectionApiV1ConnectionsTestPostData, TestConnectionApiV1ConnectionsTestPostResponse, GetDashboardStatsApiV1DashboardGetResponse, RootGetResponse, HealthHealthGetResponse, IntrospectDatabaseApiV1IntrospectionPostData, IntrospectDatabaseApiV1IntrospectionPostResponse, GetTablesByConnectionApiV1IntrospectionConnectionsConnectionIdTablesGetData, GetTablesByConnectionApiV1IntrospectionConnectionsConnectionIdTablesGetResponse, GetTableApiV1IntrospectionTablesTableIdGetData, GetTableApiV1IntrospectionTablesTableIdGetResponse, GetRelationsByConnectionApiV1IntrospectionConnectionsConnectionIdRelationsGetData, GetRelationsByConnectionApiV1IntrospectionConnectionsConnectionIdRelationsGetResponse, RefreshMetadataApiV1IntrospectionConnectionsConnectionIdRefreshPostData, RefreshMetadataApiV1IntrospectionConnectionsConnectionIdRefreshPostResponse, DeleteMetadataApiV1IntrospectionConnectionsConnectionIdMetadataDeleteData, DeleteMetadataApiV1IntrospectionConnectionsConnectionIdMetadataDeleteResponse, ExecuteQueryApiV1QueryExecutePostData, ExecuteQueryApiV1QueryExecutePostResponse, GetUsersApiV1UsersGetData, GetUsersApiV1UsersGetResponse, CreateUserApiV1UsersPostData, CreateUserApiV1UsersPostResponse, GetUserApiV1UsersUserIdGetData, GetUserApiV1UsersUserIdGetResponse, UpdateUserApiV1UsersUserIdPutData, UpdateUserApiV1UsersUserIdPutResponse, DeleteUserApiV1UsersUserIdDeleteData, DeleteUserApiV1UsersUserIdDeleteResponse } from './types.gen';
 
 export class AuthenticationService {
     /**
@@ -181,6 +181,21 @@ export class ConnectionsService {
     }
 }
 
+export class DashboardService {
+    /**
+     * Get Dashboard Stats
+     * Get dashboard statistics and recent connections.
+     * @returns DashboardResponse Successful Response
+     * @throws ApiError
+     */
+    public static getDashboardStatsApiV1DashboardGet(): CancelablePromise<GetDashboardStatsApiV1DashboardGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/dashboard'
+        });
+    }
+}
+
 export class DefaultService {
     /**
      * Root
@@ -331,6 +346,30 @@ export class IntrospectionService {
             path: {
                 connection_id: data.connectionId
             },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class QueryService {
+    /**
+     * Execute Query
+     * Execute a SQL query on a specified database connection.
+     * Returns results with column names and rows.
+     * Limited to SELECT queries for safety.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ExecuteQueryResponse Successful Response
+     * @throws ApiError
+     */
+    public static executeQueryApiV1QueryExecutePost(data: ExecuteQueryApiV1QueryExecutePostData): CancelablePromise<ExecuteQueryApiV1QueryExecutePostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/query/execute',
+            body: data.requestBody,
+            mediaType: 'application/json',
             errors: {
                 422: 'Validation Error'
             }

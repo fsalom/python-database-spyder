@@ -88,6 +88,26 @@ export type ConnectionUpdate = {
 };
 
 /**
+ * Dashboard data response.
+ */
+export type DashboardResponse = {
+    stats: DashboardStats;
+    recent_connections: Array<ConnectionResponse>;
+};
+
+/**
+ * Dashboard statistics response.
+ */
+export type DashboardStats = {
+    total_connections: number;
+    active_connections: number;
+    inactive_connections: number;
+    error_connections: number;
+    total_tables: number;
+    total_relations: number;
+};
+
+/**
  * Supported database types.
  */
 export type DatabaseType = 'postgresql' | 'mysql' | 'sqlite' | 'mssql' | 'oracle';
@@ -142,6 +162,38 @@ export type DiscoveredTableResponse = {
     comment?: (string | null);
     created_at: string;
     columns?: Array<DiscoveredColumnResponse>;
+    primary_key_columns?: (Array<(string)> | null);
+};
+
+/**
+ * Request schema for executing SQL queries.
+ */
+export type ExecuteQueryRequest = {
+    /**
+     * ID of the database connection
+     */
+    connection_id: number;
+    /**
+     * SQL query to execute
+     */
+    query: string;
+    /**
+     * Maximum number of rows to return
+     */
+    limit?: number;
+};
+
+/**
+ * Response schema for query execution results.
+ */
+export type ExecuteQueryResponse = {
+    success: boolean;
+    columns: Array<(string)>;
+    rows: Array<{
+        [key: string]: unknown;
+    }>;
+    row_count: number;
+    execution_time_ms: number;
 };
 
 export type HTTPValidationError = {
@@ -277,6 +329,8 @@ export type TestConnectionApiV1ConnectionsTestPostData = {
 
 export type TestConnectionApiV1ConnectionsTestPostResponse = (ConnectionTestResponse);
 
+export type GetDashboardStatsApiV1DashboardGetResponse = (DashboardResponse);
+
 export type RootGetResponse = (unknown);
 
 export type HealthHealthGetResponse = (unknown);
@@ -316,6 +370,12 @@ export type DeleteMetadataApiV1IntrospectionConnectionsConnectionIdMetadataDelet
 };
 
 export type DeleteMetadataApiV1IntrospectionConnectionsConnectionIdMetadataDeleteResponse = (void);
+
+export type ExecuteQueryApiV1QueryExecutePostData = {
+    requestBody: ExecuteQueryRequest;
+};
+
+export type ExecuteQueryApiV1QueryExecutePostResponse = (ExecuteQueryResponse);
 
 export type GetUsersApiV1UsersGetData = {
     limit?: number;
